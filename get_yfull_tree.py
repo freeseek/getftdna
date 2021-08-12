@@ -19,7 +19,7 @@
    Written by Giulio Genovese <giulio.genovese@gmail.com>
 """
 
-import sys, re, xml, json
+import sys, re, xml.etree.ElementTree, json
 
 try:
   import requests
@@ -53,7 +53,7 @@ def get_set(tree, key):
 # download main lineages tree
 url = 'http://yfull.com/tree'
 r = requests.get(url)
-text = re.findall(r'<div><ul id="tree" class="tree">.*?</div>', r.text, re.DOTALL | re.MULTILINE)[0]
+text = re.findall(r'<div class="yf-tree-wrapper"><ul id="tree" class="yfullcom-tree">.*?</div>', r.text, re.DOTALL | re.MULTILINE)[0]
 li = xml.etree.ElementTree.fromstring(text)[0][0]
 tree = get_tree(li, 1)
 leaves = get_set(tree, 'ROOT (Y-Chromosome "Adam")') - tree.keys()
@@ -62,7 +62,7 @@ leaves = get_set(tree, 'ROOT (Y-Chromosome "Adam")') - tree.keys()
 for leaf in leaves:
   url = 'http://yfull.com/tree/' + leaf
   r = requests.get(url)
-  text = re.findall(r'<div><ul id="tree" class="tree">.*?</div>', r.text, re.DOTALL | re.MULTILINE)[0]
+  text = re.findall(r'<div class="yf-tree-wrapper"><ul id="tree" class="yfullcom-tree">.*?</div>', r.text, re.DOTALL | re.MULTILINE)[0]
   li = xml.etree.ElementTree.fromstring(text)[0][0]
   tree.update(get_tree(li))
 
